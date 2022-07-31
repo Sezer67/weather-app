@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Drawer, Row, Tooltip } from "antd";
+import { Button, Col, Divider, Drawer, DrawerProps, Row, Tooltip } from "antd";
 import React, { useState } from "react";
 import { icons } from "../constants";
 import { TWeather } from "../types/WeatherState";
@@ -8,9 +8,10 @@ import { motion } from "framer-motion";
 import WeatherDrawer from "./WeatherDrawer";
 type PropsType = {
   weather: TWeather;
+  placement: DrawerProps["placement"];
 };
 const MyCard: React.FC<PropsType> = (prop: PropsType) => {
-  const { weather } = prop;
+  const { weather, placement } = prop;
   const language = useAppSelector((state) => state.weather.language);
   const [detailShow, setDetailShow] = useState<boolean>(false);
   const [drawerShow, setDrawerShow] = useState<boolean>(false);
@@ -96,7 +97,9 @@ const MyCard: React.FC<PropsType> = (prop: PropsType) => {
           }}
         >
           <Button onClick={handleSelecLocation} type="default">
-            <span className="text-gray font-semibold">{homeTxts.details[language]}</span>
+            <span className="text-gray font-semibold">
+              {homeTxts.details[language]}
+            </span>
           </Button>
         </motion.div>
       )}
@@ -105,8 +108,8 @@ const MyCard: React.FC<PropsType> = (prop: PropsType) => {
           visible={drawerShow}
           setVisible={setDrawerShow}
           key={weather.name}
-          weatherName={weather.name}
-          placement={"right"}
+          weatherName={weather.region!!}
+          placement={placement}
         />
       )}
     </div>

@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hook";
 import { setSelectedLocation } from "../redux/weather/weaterSlice";
 import Astro from "./Astro";
 import HourlyDisplay from "./HourlyDisplay";
+import { getWindowSize } from "../helpers/Dimensions";
 
 type PropsType = {
   visible: boolean;
@@ -38,6 +39,7 @@ const WeatherDrawer: React.FC<PropsType> = (props: PropsType) => {
         const { data } = response;
         const weather: TWeather = {
           condition: data.current.condition,
+          region: data.location.region,
           country: data.location.country,
           feelslike: data.current.feelslike_c,
           lastUpdated: data.current.last_updated,
@@ -60,12 +62,26 @@ const WeatherDrawer: React.FC<PropsType> = (props: PropsType) => {
 
   return (
     <Drawer
-      size="large"
+      size={"large"}
+      height={
+        getWindowSize().innerWidth < 800
+          ? getWindowSize().innerHeight / 1.5
+          : ""
+      }
       visible={visible}
       placement={placement}
       onClose={() => setVisible(false)}
       destroyOnClose={true}
-      title={selectedWeather?.name + " / " + selectedWeather?.country}
+      title={
+        selectedWeather?.name +
+        `${
+          selectedWeather?.name !== selectedWeather?.region
+            ? " / " + selectedWeather?.region
+            : ""
+        }` +
+        " / " +
+        selectedWeather?.country
+      }
       headerStyle={{
         backgroundColor: "#7290FF",
         display: "flex",
@@ -83,11 +99,15 @@ const WeatherDrawer: React.FC<PropsType> = (props: PropsType) => {
         {loading && <Spin />}
         <div className="flex flex-col items-center">
           <img alt="icon" src={selectedWeather?.condition.icon} />
-          <b className="text-dark" >{selectedWeather?.condition.text}</b>
+          <b className="text-dark">{selectedWeather?.condition.text}</b>
           <b className="text-dark">{selectedWeather?.temperature} &#8451;</b>
         </div>
-        {selectedWeather && <Astro astro={selectedWeather?.forecast[0].astro} />}
-        {selectedWeather && <HourlyDisplay hours={selectedWeather?.forecast[0].hour} />}
+        {selectedWeather && (
+          <Astro astro={selectedWeather?.forecast[0].astro} />
+        )}
+        {selectedWeather && (
+          <HourlyDisplay hours={selectedWeather?.forecast[0].hour} />
+        )}
       </div>
     </Drawer>
   );

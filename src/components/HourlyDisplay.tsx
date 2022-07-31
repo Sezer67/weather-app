@@ -1,18 +1,18 @@
 import { Button, Card, Col, Popover } from "antd";
 import React from "react";
-import * as homeTxts from '../language/home.language'
+import * as homeTxts from "../language/home.language";
 import { useAppSelector } from "../redux/hook";
 import { LanguageChoseType } from "../types/language.type";
 type PropType = {
   hours: Array<any>;
 };
 type ContentPropType = {
-    hour:any;
-    language:LanguageChoseType
-}
-const Content: React.FC<ContentPropType> = (prop:ContentPropType) => {
-    const {hour,language} = prop;
-    return (
+  hour: any;
+  language: LanguageChoseType;
+};
+const Content: React.FC<ContentPropType> = (prop: ContentPropType) => {
+  const { hour, language } = prop;
+  return (
     <Card style={{ width: "260px" }}>
       <Card.Meta
         avatar={
@@ -24,10 +24,20 @@ const Content: React.FC<ContentPropType> = (prop:ContentPropType) => {
         title={"Today " + hour.time.split(" ")[1]}
         description={
           <div className="flex flex-col w-full justify-start items-start">
-            <span className="flex flex-row justify-between w-full" ><b className="pr-2">{homeTxts.temp[language]}</b> {hour.temp_c} </span>
-            <span className="flex flex-row justify-between w-full" ><b className="pr-2">{homeTxts.feelslike[language]}</b> {hour.feelslike_c} </span>
-            <span className="flex flex-row justify-between w-full" ><b className="pr-2">{homeTxts.humidity[language]}</b> {hour.humidity} </span>
-            <span className="flex flex-row justify-between w-full" ><b className="pr-2">{homeTxts.wind[language]}</b> {hour.wind_kph} </span>
+            <span className="flex flex-row justify-between w-full">
+              <b className="pr-2">{homeTxts.temp[language]}</b> {hour.temp_c}{" "}
+            </span>
+            <span className="flex flex-row justify-between w-full">
+              <b className="pr-2">{homeTxts.feelslike[language]}</b>{" "}
+              {hour.feelslike_c}{" "}
+            </span>
+            <span className="flex flex-row justify-between w-full">
+              <b className="pr-2">{homeTxts.humidity[language]}</b>{" "}
+              {hour.humidity}{" "}
+            </span>
+            <span className="flex flex-row justify-between w-full">
+              <b className="pr-2">{homeTxts.wind[language]}</b> {hour.wind_kph}{" "}
+            </span>
           </div>
         }
       />
@@ -36,13 +46,16 @@ const Content: React.FC<ContentPropType> = (prop:ContentPropType) => {
 };
 const HourlyDisplay: React.FC<PropType> = (prop: PropType) => {
   const { hours } = prop;
-    console.log(hours);
-const language = useAppSelector((state)=>state.weather.language);
+  console.log(hours);
+  const language = useAppSelector((state) => state.weather.language);
   return (
-    <div className="w-full flex flex-row justify-start items-center flex-wrap">
+    <div className="w-full flex flex-row justify-center items-center flex-wrap">
       {hours.map((hour, index: number) => {
         return (
-          <Popover content={<Content hour={hour} language={language} />} trigger="hover">
+          <Popover
+            content={<Content hour={hour} language={language} />}
+            trigger="hover"
+          >
             <Button type="default" size="large" className="m-3 ">
               {hour.time.split(" ")[1]}
             </Button>

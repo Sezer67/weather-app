@@ -19,12 +19,28 @@ import { TWeather } from "../../types/WeatherState";
 import { motion } from "framer-motion";
 import { icons } from "../../constants";
 import Map from "../Map/Map";
+import { LocationType } from "../../types/map.type";
+import * as mapConfig from "../../configs/map/map.config";
+import { useGeolocated } from "react-geolocated";
+import { getWindowSize } from "../../helpers/Dimensions";
 const Sider: React.FC = () => {
+  const { coords } = useGeolocated({
+    positionOptions: {
+      enableHighAccuracy: false,
+    },
+    userDecisionTimeout: 5000,
+  });
   const [collapsed, setCollapsed] = useState<Boolean>(false);
   const language = useAppSelector((state) => state.weather.language);
   const [activeBtn, setActiveBtn] = useState<number>(1);
   const [locationModalVisible, setLocationModaVisible] =
     useState<boolean>(false);
+  const [locationData, setLocationData] = useState<TWeather | undefined>(
+    undefined
+  );
+  const [coordinates, setCoordinates] = useState<LocationType>(
+    coords ? { ...coords } : mapConfig.defaultLocation
+  );
   const dispatch = useAppDispatch();
   const handleSearch = (value: string) => {
     getByLocation(addQueryToUrl({ q: value, aqi: "no" }, baseUrl))
@@ -33,6 +49,7 @@ const Sider: React.FC = () => {
         delete data.current.condition.code;
         const weather: Omit<TWeather, "forecast"> = {
           condition: data.current.condition,
+          region: data.location.region,
           country: data.location.country,
           feelslike: data.current.feelslike_c,
           lastUpdated: data.current.last_updated,
@@ -52,11 +69,36 @@ const Sider: React.FC = () => {
       .finally(() => {});
   };
 
+  const modalTitle = (
+    <div className="w-full flex flex-row items-center justify-between pr-6">
+      <div>
+        <b>{siderTxts.selectMap[language]}</b>
+        <b className="text-primary ml-3">
+          {locationData?.name}{" "}
+          {locationData?.region && "/ " + locationData.region}
+        </b>
+      </div>
+      <Button
+        onClick={() => {
+          handleSearch(`${coordinates.latitude},${coordinates.longitude}`);
+          setLocationModaVisible(false);
+        }}
+        type="primary"
+      >
+        OK
+      </Button>
+    </div>
+  );
+
   return (
     <motion.div
       className={`relative ${
-        collapsed ? "w-auto" : "min-w-[250px] "
-      } transform transition-all duration-300 shadow-md bg-slate-100 p-4 pt-6`}
+        collapsed
+          ? "w-auto"
+          : getWindowSize().innerWidth > 1000
+          ? "min-w-[300px]"
+          : "min-w-[250px] "
+      } transition-all duration-300 shadow-right-md bg-slate-100 p-4 pt-6`}
     >
       <div className="absolute -right-7 top-0">
         <button onClick={() => setCollapsed(!collapsed)}>
@@ -136,15 +178,19 @@ const Sider: React.FC = () => {
         )}
       </div>
       <Modal
-        title={siderTxts.selectMap[language]}
+        title={modalTitle}
         centered
         visible={locationModalVisible}
         onCancel={() => setLocationModaVisible(false)}
         width={1000}
-        footer={null}
+        footer
       >
         <div className="w-full h-[85vh]">
-          <Map />
+          <Map
+            setLocationData={setLocationData}
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+          />
         </div>
       </Modal>
     </motion.div>

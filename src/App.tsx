@@ -4,8 +4,8 @@ import { Route, BrowserRouter, Routes } from "react-router-dom";
 import { Layout, Spin } from "antd";
 import Sider from "./components/Sider";
 import Header from "./components/Header";
-import Map from "./components/Map/Map";
-const Home = React.lazy(()=> import('./pages/Home'))
+import Footer from "./components/Footer";
+const Home = React.lazy(() => import("./pages/Home"));
 
 const App: React.FC = () => {
   return (
@@ -24,7 +24,9 @@ const App: React.FC = () => {
             </Layout.Content>
           </Suspense>
         </div>
-        <div>Footer</div>
+        <div className="max-h-[7vh]">
+          <Footer />
+        </div>
       </div>
     </BrowserRouter>
   );
