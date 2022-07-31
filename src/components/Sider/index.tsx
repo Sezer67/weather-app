@@ -30,7 +30,9 @@ const Sider: React.FC = () => {
     },
     userDecisionTimeout: 5000,
   });
-  const [collapsed, setCollapsed] = useState<Boolean>(false);
+  const [collapsed, setCollapsed] = useState<Boolean>(
+    getWindowSize().innerWidth < 800 ? true : false
+  );
   const language = useAppSelector((state) => state.weather.language);
   const [activeBtn, setActiveBtn] = useState<number>(1);
   const [locationModalVisible, setLocationModaVisible] =

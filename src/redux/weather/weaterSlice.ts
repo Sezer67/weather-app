@@ -2,7 +2,7 @@ import { Action, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LanguageChoseType } from "../../types/language.type";
 import { WeatherStateType } from "../../types/StateType";
 import { TWeather } from "../../types/WeatherState";
-
+import * as errorTxt from "../../language/error.lanuage";
 const initialState: WeatherStateType = {
   weathers: [],
   selectedLocationWeather: null,
@@ -31,8 +31,10 @@ const weatherSlice = createSlice({
         (weather) => weather.name === action.payload.name
       );
       if (control) {
-        state.error.title = "Error";
-        state.error.description = "zaten mevcut";
+        state.error.title = errorTxt.error[state.language];
+        state.error.description = `${action.payload.name} ${
+          errorTxt.alreadyExists[state.language]
+        }`;
       } else {
         state.weathers.unshift(action.payload);
       }
